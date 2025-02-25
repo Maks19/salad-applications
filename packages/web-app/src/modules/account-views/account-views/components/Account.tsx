@@ -148,7 +148,8 @@ const _Account: FC<Props> = ({
   logInWithPayPalChallengeSudoMode,
   signInWithGoogleChallengeSudoMode,
 }) => {
-  const location = useLocation<{ isGoogleSignInFormTriggered: string }>()
+  const location = useLocation()
+  console.log('TEST: ', location)
   const isGoogleSignInFormTriggered = !!location.state?.isGoogleSignInFormTriggered
 
   useEffect(() => {

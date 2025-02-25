@@ -1,8 +1,9 @@
 import classnames from 'classnames'
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, type ComponentType } from 'react'
 import type { WithStyles } from 'react-jss'
 import withStyles from 'react-jss'
-import { Route, Switch } from 'react-router'
+import { Route, Routes } from 'react-router'
 import { Button, Divider, LinkListUnstyled, MenuTitle, NoPageFound } from '.'
 import { FeatureFlags, useFeatureManager } from '../FeatureManager'
 import { AccountContainer } from '../modules/account-views/account-views'
@@ -102,12 +103,12 @@ const _Settings = ({ appBuild, classes, menuButtons, isUserReferralsEnabled, onC
         </div>
       </div>
       <div className={classnames(classes.settings)}>
-        <Switch>
+        <Routes>
           {menuItems?.map((menuItem) => (
-            <Route key={menuItem.url} exact path={menuItem.url} component={menuItem.component} />
+            <Route key={menuItem.url} path={menuItem.url} element={menuItem.component as ReactNode} />
           ))}
-          <Route component={NoPageFound} />
-        </Switch>
+          <Route element={<NoPageFound />} />
+        </Routes>
       </div>
     </div>
   )

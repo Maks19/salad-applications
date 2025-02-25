@@ -123,7 +123,7 @@ const _BackupCodesPage: FC<Props> = ({
   getBackupCodes,
 }) => {
   const [isCopied, setIsCopied] = useState(false)
-  const location = useLocation<{ isFirstPasskeyAdded: string }>()
+  const location = useLocation()
   const isFirstPasskeyAdded = location.state?.isFirstPasskeyAdded
 
   const handleCopyClick = () => {

@@ -16,7 +16,7 @@ import { FeatureFlags, useFeatureManager } from './FeatureManager'
 import { MobileRoutes } from './MobileRoutes'
 import { NavigationBarContainer } from './modules/home-views'
 import { NovuNotificationBanner } from './modules/notifications-views/components'
-import { Routes } from './Routes'
+import { RoutesComponent } from './Routes'
 import type { SaladTheme } from './SaladTheme'
 import type { RootStore } from './Store'
 
@@ -162,7 +162,7 @@ export const _App = ({
                   history: history,
                 }}
               >
-                <Routes isAuthenticated={isAuthenticated} />
+                <RoutesComponent isAuthenticated={isAuthenticated} />
               </SearchProvider>
             </div>
             <ToastContainer />

@@ -1,6 +1,4 @@
-import type { Location } from 'history'
-import type { RouteComponentProps } from 'react-router'
-import { Redirect, Route, Switch, withRouter } from 'react-router'
+import { Navigate, Route, Routes, useLocation } from 'react-router'
 import { NoPageFound } from './components'
 import { FeatureFlags, useFeatureManager } from './FeatureManager'
 import { BackupCodesPageContainer } from './modules/backup-codes/BackupCodesPageContainer'
@@ -17,63 +15,69 @@ import { SettingsContainer } from './modules/settings-views'
 import { StorefrontHomePage } from './modules/storefront-views/pages/StorefrontHomePage'
 import { VaultListContainer } from './modules/vault-views'
 
-interface Props extends RouteComponentProps {
+interface Props {
   isAuthenticated: boolean
 }
 
-const _Routes = ({ location, isAuthenticated }: Props) => {
+export const RoutesComponent = ({ isAuthenticated }: Props) => {
+  const location = useLocation()
   const featureManager = useFeatureManager()
   const isDemandMonitorFeatureFlagEnabled = featureManager.isEnabled(FeatureFlags.DemandMonitor)
   const isFleetDashboardFeatureFlagEnabled = featureManager.isEnabled(FeatureFlags.FleetDashboard)
 
   const currentLocation =
-    (location.state as { currentLocation: Location | undefined } | undefined)?.currentLocation || location
+    (location.state as { currentLocation?: typeof location } | undefined)?.currentLocation || location
 
   return (
-    <Switch location={currentLocation}>
+    <Routes location={currentLocation}>
       {/* Store Pages */}
-      <Route path={['/store', '/store/search']} exact render={() => <StorefrontHomePage />} />
-      <Route path="/store/rewards/:id" exact component={RewardDetailsContainer} />
-      <Route path="/store/vault" exact component={VaultListContainer} />
-      {/* Recommended Target Rewards Page */}
-      <Route path="/store/select-target-reward" exact component={SelectTargetRewardContainer} />
+      <Route path="/store" element={<StorefrontHomePage />} />
+      <Route path="/store/search" element={<StorefrontHomePage />} />
+      <Route path="/store/rewards/:id" element={<RewardDetailsContainer />} />
+      <Route path="/store/vault" element={<VaultListContainer />} />
+      <Route path="/store/select-target-reward" element={<SelectTargetRewardContainer />} />
+
       {/* Modals */}
-      {/* SaladPay: This is stand in until we figure out iFrames, popups... */}
-      <Route exact path="/salad-pay/order-summary" component={SaladPayOrderSummaryContainer} />
-      <Route exact path="/bonuses/replace-bonus" component={ReplaceBonusModalContainer} />
-      {/* Account */}
-      <Redirect exact from="/account" to="/account/summary" />
-      <Route path="/account/exit-survey" component={ExitSurveyContainer} />
-      <Route path="/account/passkey/delete/:id" exact component={PasskeyDeletePageContainer} />
-      <Route path="/account/backup-codes" exact component={BackupCodesPageContainer} />
-      <Route path="/account" component={SettingsContainer} />
+      <Route path="/salad-pay/order-summary" element={<SaladPayOrderSummaryContainer />} />
+      <Route path="/bonuses/replace-bonus" element={<ReplaceBonusModalContainer />} />
+
+      {/* Account Routes (nested) */}
+      <Route path="/account">
+        {/* When exactly at /account, redirect to /account/summary */}
+        <Route index element={<Navigate to="/account/summary" replace />} />
+        <Route path="exit-survey" element={<ExitSurveyContainer />} />
+        <Route path="passkey/delete/:id" element={<PasskeyDeletePageContainer />} />
+        <Route path="backup-codes" element={<BackupCodesPageContainer />} />
+        {/* Fallback: all other /account paths */}
+        <Route path="*" element={<SettingsContainer />} />
+      </Route>
+
       {/* Protected Action */}
-      <Route path="/protected-action" component={ProtectedActionPageContainer} />
-      {/* Earn Pages */}
-      {isAuthenticated && <Redirect exact from="/earn" to="/earn/summary" />}
-      <Route
-        path="/earn/summary"
-        component={isFleetDashboardFeatureFlagEnabled ? EarningSummaryContainer : OldEarningSummaryContainer}
-      />
-      {isDemandMonitorFeatureFlagEnabled && <Route path="/earn/demand" exact component={DemandMonitorPageContainer} />}
-      <Route path="/earn" component={EarnInfoPage} />
-      <Route
-        exact
-        path="/search"
-        component={({ location }: RouteComponentProps) => (
-          <Redirect
-            to={{
-              ...location,
-              pathname: `/store${location.pathname}`,
-            }}
-          />
-        )}
-      />
-      <Redirect exact from="/rewards/:id" to="/store/rewards/:id" />
-      <Redirect exact from="/" to="/store" />
-      <Route component={NoPageFound} />
-    </Switch>
+      <Route path="/protected-action" element={<ProtectedActionPageContainer />} />
+
+      {/* Earn Routes (nested) */}
+      <Route path="/earn">
+        {isAuthenticated && <Route index element={<Navigate to="/earn/summary" replace />} />}
+        <Route
+          path="summary"
+          element={isFleetDashboardFeatureFlagEnabled ? <EarningSummaryContainer /> : <OldEarningSummaryContainer />}
+        />
+        {isDemandMonitorFeatureFlagEnabled && <Route path="demand" element={<DemandMonitorPageContainer />} />}
+        {/* Fallback for any other /earn path */}
+        <Route path="*" element={<EarnInfoPage />} />
+      </Route>
+
+      {/* Search Redirect */}
+      <Route path="/search" element={<Navigate to={`/store${location.pathname}`} replace />} />
+
+      {/* Rewards Redirect */}
+      <Route path="/rewards/:id" element={<Navigate to="/store/rewards/:id" replace />} />
+
+      {/* Root Redirect */}
+      <Route path="/" element={<Navigate to="/store" replace />} />
+
+      {/* Fallback for any unmatched route */}
+      <Route path="*" element={<NoPageFound />} />
+    </Routes>
   )
 }
-
-export const Routes = withRouter(_Routes)

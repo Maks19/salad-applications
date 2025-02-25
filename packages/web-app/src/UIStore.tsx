@@ -15,6 +15,6 @@ export class UIStore {
       this.store.analytics.trackButtonClicked('modal_close_button', 'Modal Close Button', 'enabled')
     }
 
-    this.store.routing.goBack()
+    this.store.routing.back()
   }
 }

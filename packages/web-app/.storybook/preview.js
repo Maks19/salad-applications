@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs'
 import { addDecorator } from '@storybook/react'
 import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
 import { Border } from './decorators/Border'
 import { DisableUserSelect } from './decorators/DisableUserSelect'
 import { SaladTheme } from './decorators/SaladTheme'

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { Component } from 'react'
 import type { WithStyles } from 'react-jss'
 import withStyles from 'react-jss'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router'
 import type { LinkTrackingInfo } from '../../../modules/analytics/models'
 import type { SaladTheme } from '../../../SaladTheme'
 import { getStore } from '../../../Store'
@@ -87,7 +87,7 @@ class _MenuTitle extends Component<Props, State> {
         ) : enabled !== false ? (
           <NavLink
             to={path}
-            activeClassName="active"
+            className="active"
             onClick={trackingInfo ? () => handleClickTracking(path, trackingInfo) : undefined}
           >
             {children}

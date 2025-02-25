@@ -75,7 +75,7 @@ export class SaladPayStore {
       // Use replace to make the browser's "back" button works properly
       this.routing.replace(`/rewards/${lastRewardId}`)
     } else {
-      this.routing.goBack()
+      this.routing.back()
     }
   }
 

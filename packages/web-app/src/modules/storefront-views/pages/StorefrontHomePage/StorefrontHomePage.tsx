@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Component } from 'react'
 import type { WithStyles } from 'react-jss'
 import withStyles from 'react-jss'
-import { Route, Switch } from 'react-router'
+import { Route, Routes } from 'react-router'
 import type { SaladTheme } from '../../../../SaladTheme'
 import { StorefrontPageContainer } from '../../StorefrontPageContainer'
 import { RewardSearchBarContainer } from './RewardSearchBar/RewardSearchBarContainer'
@@ -49,10 +49,10 @@ class _StorefrontHomePage extends Component<WithStyles<typeof styles>> {
         <div className={classes.appContainer}>
           <RewardSearchBarContainer />
           <div className={classes.main}>
-            <Switch>
-              <Route exact path="/store" component={StorefrontPageContainer} />
-              <Route exact path="/store/search" component={RewardSearchResultContainer} />
-            </Switch>
+            <Routes>
+              <Route path="/store" element={<StorefrontPageContainer />} />
+              <Route path="/store/search" element={<RewardSearchResultContainer />} />
+            </Routes>
           </div>
         </div>
       </div>

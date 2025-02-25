@@ -22,10 +22,10 @@ import { createRoot } from 'react-dom/client'
 import { createIntl, createIntlCache, RawIntlProvider } from 'react-intl'
 import { ThemeProvider as JSSThemeProvider } from 'react-jss'
 import { SkeletonTheme } from 'react-loading-skeleton'
-import { Router } from 'react-router-dom'
 import { App } from './App'
 import { createClient } from './axiosFactory'
-import { Head, ErrorBoundary } from './components'
+import { ErrorBoundary, Head } from './components'
+import { CustomHistoryRouter } from './components/CustomHistoryRouter'
 import { NovuProviderWrapper } from './components/NovuProviderWrapper'
 import { config } from './config'
 import { FeatureManagerProvider, UnleashFeatureManager } from './FeatureManager'
@@ -42,26 +42,7 @@ const featureManager = new UnleashFeatureManager(config, undefined)
 
 setTimeout(() => {
   const rootStore = createStore(client, featureManager)
-  const routerHistory = createBrowserHistory({
-    basename: '/',
-  })
-
-  let currentLocation: any = null
-
-  // Ensures that the same url will not get "pushed" multiple times
-  routerHistory.block((location, action) => {
-    const nextLocation = location.pathname + location.search
-
-    if (action === 'PUSH') {
-      if (currentLocation === nextLocation) {
-        return false
-      }
-    }
-
-    currentLocation = nextLocation
-
-    return undefined
-  })
+  const routerHistory = createBrowserHistory()
 
   const history = syncHistoryWithStore(routerHistory, rootStore.routing)
 
@@ -77,7 +58,7 @@ setTimeout(() => {
   const container = createRoot(document.getElementById('root') as HTMLDivElement)
   container.render(
     <FeatureManagerProvider value={featureManager}>
-      <Router history={history}>
+      <CustomHistoryRouter history={history}>
         <RawIntlProvider value={intl}>
           <EmotionThemeProvider theme={EmotionTheme}>
             <JSSThemeProvider theme={JSSTheme}>
@@ -106,7 +87,7 @@ setTimeout(() => {
             </JSSThemeProvider>
           </EmotionThemeProvider>
         </RawIntlProvider>
-      </Router>
+      </CustomHistoryRouter>
     </FeatureManagerProvider>,
   )
 }, 0)

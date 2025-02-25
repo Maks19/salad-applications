@@ -1,5 +1,4 @@
 import queryString from 'query-string'
-import type { RouteComponentProps } from 'react-router'
 import { config } from '../../config'
 import type { RewardQuery } from './models'
 import type { Reward } from './models/Reward'
@@ -46,7 +45,10 @@ export const stringifyRewardQuery = (query: RewardQuery): string => {
   return queryString.stringify(query as Record<string, boolean | number | string | string[]>)
 }
 
-export const parseRewardQuery = (route: RouteComponentProps<{ category?: string }>): RewardQuery => {
+export const parseRewardQuery = (route: {
+  location: { search: string }
+  match: { params: { category: any } }
+}): RewardQuery => {
   const query: RewardQuery = queryString.parse(route.location.search, { parseNumbers: true, parseBooleans: true })
 
   //If only 1 category is returned, then the value will be a string, we need to ensure that it is always an array
